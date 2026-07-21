@@ -1,0 +1,121 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-inverse: var(--inverse);
+  --color-inverse-foreground: var(--inverse-foreground);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --font-sans: "DM Sans", system-ui, sans-serif;
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+:root {
+  --radius: 0.625rem;
+
+  --background: hsl(38 30% 97%);
+  --foreground: hsl(20 15% 12%);
+  --card: hsl(38 30% 97%);
+  --card-foreground: hsl(20 15% 12%);
+  --popover: hsl(38 30% 97%);
+  --popover-foreground: hsl(20 15% 12%);
+  --primary: hsl(345 60% 35%);
+  --primary-foreground: hsl(38 30% 97%);
+  --secondary: hsl(38 20% 92%);
+  --secondary-foreground: hsl(20 15% 12%);
+  --muted: hsl(20 15% 12% / 0.6);
+  --muted-foreground: hsl(20 15% 12% / 0.6);
+  --accent: hsl(345 60% 35%);
+  --accent-foreground: hsl(38 30% 97%);
+  --destructive: hsl(0 84% 60%);
+  --destructive-foreground: hsl(38 30% 97%);
+  --border: hsl(20 15% 12% / 0.1);
+  --input: hsl(20 15% 12% / 0.1);
+  --ring: hsl(345 60% 35%);
+  --inverse: hsl(20 6% 10%);
+  --inverse-foreground: hsl(40 5% 95%);
+  --chart-1: hsl(345 60% 35%);
+  --chart-2: hsl(340 55% 40%);
+  --chart-3: hsl(350 50% 30%);
+  --chart-4: hsl(355 45% 45%);
+  --chart-5: hsl(345 55% 30%);
+  --sidebar: hsl(38 30% 97%);
+  --sidebar-foreground: hsl(20 15% 12%);
+  --sidebar-primary: hsl(345 60% 35%);
+  --sidebar-primary-foreground: hsl(38 30% 97%);
+  --sidebar-accent: hsl(38 20% 92%);
+  --sidebar-accent-foreground: hsl(20 15% 12%);
+  --sidebar-border: hsl(20 15% 12% / 0.1);
+  --sidebar-ring: hsl(345 60% 35%);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility animate-reveal {
+  animation: reveal-up 0.8s cubic-bezier(0.19, 1, 0.22, 1) both;
+}
