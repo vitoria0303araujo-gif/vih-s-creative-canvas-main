@@ -290,25 +290,6 @@ export default function InstagramFeed() {
                 </a>
               </div>
             </div>
-
-            {/* Followers details */}
-            <div className="pt-2 border-t border-border/40 text-[10px] text-muted-foreground flex items-center gap-2 justify-center md:justify-start">
-              <div className="flex -space-x-1.5">
-                <div className="w-4 h-4 rounded-full bg-primary/20 border border-background flex items-center justify-center font-bold text-[6px] text-primary">
-                  G
-                </div>
-                <div className="w-4 h-4 rounded-full bg-primary/30 border border-background flex items-center justify-center font-bold text-[6px] text-primary">
-                  C
-                </div>
-                <div className="w-4 h-4 rounded-full bg-primary/40 border border-background flex items-center justify-center font-bold text-[6px] text-primary">
-                  V
-                </div>
-              </div>
-              <span>
-                Seguido(a) por <strong className="text-foreground">gabriel_aguiar011</strong>,{" "}
-                <strong className="text-foreground">goconecta.com.br</strong> e outras 24 pessoas
-              </span>
-            </div>
           </div>
         </div>
       </div>
