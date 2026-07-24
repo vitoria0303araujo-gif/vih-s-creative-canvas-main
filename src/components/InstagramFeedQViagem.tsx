@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   Heart,
   MessageCircle,
@@ -70,26 +70,79 @@ const REELS_DATA: ReelItem[] = [
   },
 ];
 
-// Componente individual para cada Reel com controle de Mouse Hover
+// Componente individual para cada Reel com controle de Mouse Hover e Intersection Observer
 function ReelCard({ item }: { item: ReelItem }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const cardRef = useRef<HTMLAnchorElement>(null);
+  const [isActive, setIsActive] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detecta se é dispositivo móvel (por largura ou toque)
+  useEffect(() => {
+    const checkDevice = () => {
+      setIsMobile(
+        window.matchMedia("(max-width: 768px)").matches || 
+        ("ontouchstart" in window) || 
+        navigator.maxTouchPoints > 0
+      );
+    };
+    checkDevice();
+    window.addEventListener("resize", checkDevice);
+    return () => window.removeEventListener("resize", checkDevice);
+  }, []);
+
+  // Intersection Observer para AutoPlay no Mobile
+  useEffect(() => {
+    if (!isMobile) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsActive(entry.isIntersecting);
+      },
+      {
+        threshold: 0.5, // Ativa quando 50% do card estiver visível
+      }
+    );
+
+    if (cardRef.current) {
+      observer.observe(cardRef.current);
+    }
+
+    return () => {
+      if (cardRef.current) {
+        observer.unobserve(cardRef.current);
+      }
+    };
+  }, [isMobile]);
+
+  // Efeito para controlar Play/Pause do vídeo baseado no estado isActive
+  useEffect(() => {
+    if (videoRef.current) {
+      if (isActive) {
+        videoRef.current.play().catch((err) => {
+          console.warn("Autoplay blocked by browser policy:", err);
+        });
+      } else {
+        videoRef.current.pause();
+      }
+    }
+  }, [isActive]);
 
   const handleMouseEnter = () => {
-    if (videoRef.current) {
-      videoRef.current.play().catch(() => {
-        // Trata a reprodução caso haja bloqueio do navegador
-      });
+    if (!isMobile) {
+      setIsActive(true);
     }
   };
 
   const handleMouseLeave = () => {
-    if (videoRef.current) {
-      videoRef.current.pause();
+    if (!isMobile) {
+      setIsActive(false);
     }
   };
 
   return (
     <a
+      ref={cardRef}
       href={item.instagramUrl}
       target="_blank"
       rel="noopener noreferrer"
@@ -99,7 +152,8 @@ function ReelCard({ item }: { item: ReelItem }) {
     >
       {/* Video container simulando formato 9:16 de celular */}
       <div className="relative aspect-[9/16] w-full rounded-t-xl overflow-hidden bg-zinc-950 border-b border-border shadow-sm group-hover:shadow-md transition-all duration-500">
-        {/* Capa estática + overlay de estatísticas */}
+        
+        {/* 1. Capa estática (Thumbnail) - Sempre visível se o vídeo não estiver ativo */}
         <div className="absolute inset-0 bg-zinc-900 z-0">
           <img
             src={item.posterUrl}
@@ -109,38 +163,48 @@ function ReelCard({ item }: { item: ReelItem }) {
               e.currentTarget.style.opacity = "0";
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-black/80 flex flex-col justify-between p-4 pointer-events-none z-10">
-            <div className="flex justify-end">
-              <span className="bg-black/40 backdrop-blur-md text-[10px] px-2 py-0.5 rounded-full font-mono text-zinc-300 flex items-center gap-1">
-                <Play className="w-2.5 h-2.5 fill-current" />
-                {item.views}
-              </span>
-            </div>
-            <div className="flex flex-col gap-1 items-start text-white/95">
-              <span className="text-[10px] uppercase font-mono tracking-widest bg-primary/80 backdrop-blur-sm px-2.5 py-1 rounded">
-                {item.tag}
-              </span>
-            </div>
-          </div>
         </div>
 
-        {/* Elemento do Vídeo (reprodução controlada via hover) */}
+        {/* 2. Elemento do Vídeo (reprodução controlada) */}
         <video
           ref={videoRef}
           src={item.videoUrl}
-          poster={item.posterUrl}
           muted
           loop
           playsInline
           preload="metadata"
-          className="w-full h-full object-cover relative z-10 opacity-90 group-hover:opacity-100 transition-opacity duration-300"
+          className={`w-full h-full object-cover absolute inset-0 transition-opacity duration-300 ${
+            isActive ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
+          }`}
           onError={(e) => {
             (e.target as HTMLVideoElement).style.display = "none";
           }}
         />
 
-        {/* Camada ao passar o mouse */}
-        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex flex-col items-center justify-center text-white gap-6">
+        {/* 3. Badges Overlay - Alta legibilidade, z-20 para ficar por cima do vídeo em execução */}
+        <div className="absolute inset-0 flex flex-col justify-between p-4 pointer-events-none z-20">
+          <div className="flex justify-end">
+            <span 
+              style={{ 
+                background: "rgba(0, 0, 0, 0.65)", 
+                color: "#ffffff", 
+                textShadow: "0 1px 2px rgba(0, 0, 0, 0.6)" 
+              }}
+              className="backdrop-blur-md text-[11px] px-2.5 py-1 rounded-full font-sans font-semibold flex items-center gap-1 shadow-sm"
+            >
+              <Play className="w-2.5 h-2.5 fill-current text-white" />
+              {item.views}
+            </span>
+          </div>
+          <div className="flex flex-col gap-1 items-start text-white/95">
+            <span className="text-[10px] uppercase font-mono tracking-widest bg-primary/80 backdrop-blur-sm px-2.5 py-1 rounded">
+              {item.tag}
+            </span>
+          </div>
+        </div>
+
+        {/* 4. Camada de Hover (Apenas Desktop - z-30) */}
+        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30 flex flex-col items-center justify-center text-white gap-6 pointer-events-none md:pointer-events-auto">
           <Instagram className="w-10 h-10 stroke-[1.5] animate-pulse" />
 
           <div className="flex gap-6 text-sm font-bold font-mono">
@@ -185,7 +249,7 @@ function ReelCard({ item }: { item: ReelItem }) {
   );
 }
 
-export default function InstagramFeed() {
+export default function InstagramFeedQViagem() {
   return (
     <div className="mt-16 border border-border rounded-2xl bg-card overflow-hidden shadow-sm animate-reveal">
       {/* Mock Instagram Header */}

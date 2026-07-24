@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import InstagramFeed from "@/components/InstagramFeed";
+import InstagramFeedQViagem from "@/components/InstagramFeedQViagem";
 import InstagramFeed4U from "@/components/InstagramFeed4U";
 
 const portrait = "/vitoria.png";
@@ -334,7 +334,7 @@ function Index() {
                 </div>
               </div>
             </div>
-            <InstagramFeed />
+            <InstagramFeedQViagem />
           </article>
 
           {/* CASE 02 */}

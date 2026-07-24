@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   Heart,
   MessageCircle,
@@ -9,6 +9,7 @@ import {
   User,
   Check,
   ExternalLink,
+  Link as LinkIcon,
 } from "lucide-react";
 
 interface ReelItem {
@@ -36,9 +37,9 @@ const REELS_DATA: ReelItem[] = [
     videoUrl: "/4uviagens/videos/trajetoria.mp4",
     posterUrl: "/4uviagens/capas/capa-trajetoria.jpg",
     instagramUrl: "https://www.instagram.com/4uviagens/",
-    likes: "4.2K",
-    comments: "156",
-    views: "58K",
+    likes: "88",
+    comments: "46",
+    views: "973",
   },
   {
     id: 2,
@@ -50,9 +51,9 @@ const REELS_DATA: ReelItem[] = [
     videoUrl: "/4uviagens/videos/black-friday.mp4",
     posterUrl: "/4uviagens/capas/capa-black-friday.jpg",
     instagramUrl: "https://www.instagram.com/4uviagens/",
-    likes: "6.1K",
-    comments: "210",
-    views: "64K",
+    likes: "60",
+    comments: "25",
+    views: "798",
   },
   {
     id: 3,
@@ -64,32 +65,85 @@ const REELS_DATA: ReelItem[] = [
     videoUrl: "/4uviagens/videos/google.mp4",
     posterUrl: "/4uviagens/capas/capa-google.jpg",
     instagramUrl: "https://www.instagram.com/4uviagens/",
-    likes: "3.8K",
-    comments: "98",
-    views: "35K",
+    likes: "32",
+    comments: "3",
+    views: "9.290",
   },
 ];
 
-// Componente individual para cada Reel com controle de Mouse Hover
+// Componente individual para cada Reel com controle de Mouse Hover e Intersection Observer
 function ReelCard({ item }: { item: ReelItem }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const cardRef = useRef<HTMLAnchorElement>(null);
+  const [isActive, setIsActive] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detecta se é dispositivo móvel (por largura ou toque)
+  useEffect(() => {
+    const checkDevice = () => {
+      setIsMobile(
+        window.matchMedia("(max-width: 768px)").matches || 
+        ("ontouchstart" in window) || 
+        navigator.maxTouchPoints > 0
+      );
+    };
+    checkDevice();
+    window.addEventListener("resize", checkDevice);
+    return () => window.removeEventListener("resize", checkDevice);
+  }, []);
+
+  // Intersection Observer para AutoPlay no Mobile
+  useEffect(() => {
+    if (!isMobile) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsActive(entry.isIntersecting);
+      },
+      {
+        threshold: 0.5, // Ativa quando 50% do card estiver visível
+      }
+    );
+
+    if (cardRef.current) {
+      observer.observe(cardRef.current);
+    }
+
+    return () => {
+      if (cardRef.current) {
+        observer.unobserve(cardRef.current);
+      }
+    };
+  }, [isMobile]);
+
+  // Efeito para controlar Play/Pause do vídeo baseado no estado isActive
+  useEffect(() => {
+    if (videoRef.current) {
+      if (isActive) {
+        videoRef.current.play().catch((err) => {
+          console.warn("Autoplay blocked by browser policy:", err);
+        });
+      } else {
+        videoRef.current.pause();
+      }
+    }
+  }, [isActive]);
 
   const handleMouseEnter = () => {
-    if (videoRef.current) {
-      videoRef.current.play().catch(() => {
-        // Trata a reprodução caso haja bloqueio do navegador
-      });
+    if (!isMobile) {
+      setIsActive(true);
     }
   };
 
   const handleMouseLeave = () => {
-    if (videoRef.current) {
-      videoRef.current.pause();
+    if (!isMobile) {
+      setIsActive(false);
     }
   };
 
   return (
     <a
+      ref={cardRef}
       href={item.instagramUrl}
       target="_blank"
       rel="noopener noreferrer"
@@ -99,7 +153,8 @@ function ReelCard({ item }: { item: ReelItem }) {
     >
       {/* Video container simulando formato 9:16 de celular */}
       <div className="relative aspect-[9/16] w-full rounded-t-xl overflow-hidden bg-zinc-950 border-b border-border shadow-sm group-hover:shadow-md transition-all duration-500">
-        {/* Capa estática + overlay de estatísticas */}
+        
+        {/* 1. Capa estática (Thumbnail) - Sempre visível se o vídeo não estiver ativo */}
         <div className="absolute inset-0 bg-zinc-900 z-0">
           <img
             src={item.posterUrl}
@@ -109,38 +164,48 @@ function ReelCard({ item }: { item: ReelItem }) {
               e.currentTarget.style.opacity = "0";
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-black/80 flex flex-col justify-between p-4 pointer-events-none z-10">
-            <div className="flex justify-end">
-              <span className="bg-black/40 backdrop-blur-md text-[10px] px-2 py-0.5 rounded-full font-mono text-zinc-300 flex items-center gap-1">
-                <Play className="w-2.5 h-2.5 fill-current" />
-                {item.views}
-              </span>
-            </div>
-            <div className="flex flex-col gap-1 items-start text-white/95">
-              <span className="text-[10px] uppercase font-mono tracking-widest bg-primary/80 backdrop-blur-sm px-2.5 py-1 rounded">
-                {item.tag}
-              </span>
-            </div>
-          </div>
         </div>
 
-        {/* Elemento do Vídeo (reprodução controlada via hover) */}
+        {/* 2. Elemento do Vídeo (reprodução controlada) */}
         <video
           ref={videoRef}
           src={item.videoUrl}
-          poster={item.posterUrl}
           muted
           loop
           playsInline
           preload="metadata"
-          className="w-full h-full object-cover relative z-10 opacity-90 group-hover:opacity-100 transition-opacity duration-300"
+          className={`w-full h-full object-cover absolute inset-0 transition-opacity duration-300 ${
+            isActive ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
+          }`}
           onError={(e) => {
             (e.target as HTMLVideoElement).style.display = "none";
           }}
         />
 
-        {/* Camada ao passar o mouse */}
-        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex flex-col items-center justify-center text-white gap-6">
+        {/* 3. Badges Overlay - Alta legibilidade, z-20 para ficar por cima do vídeo em execução */}
+        <div className="absolute inset-0 flex flex-col justify-between p-4 pointer-events-none z-20">
+          <div className="flex justify-end">
+            <span 
+              style={{ 
+                background: "rgba(0, 0, 0, 0.65)", 
+                color: "#ffffff", 
+                textShadow: "0 1px 2px rgba(0, 0, 0, 0.6)" 
+              }}
+              className="backdrop-blur-md text-[11px] px-2.5 py-1 rounded-full font-sans font-semibold flex items-center gap-1 shadow-sm"
+            >
+              <Play className="w-2.5 h-2.5 fill-current text-white" />
+              {item.views}
+            </span>
+          </div>
+          <div className="flex flex-col gap-1 items-start text-white/95">
+            <span className="text-[10px] uppercase font-mono tracking-widest bg-primary/80 backdrop-blur-sm px-2.5 py-1 rounded">
+              {item.tag}
+            </span>
+          </div>
+        </div>
+
+        {/* 4. Camada de Hover (Apenas Desktop - z-30) */}
+        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30 flex flex-col items-center justify-center text-white gap-6 pointer-events-none md:pointer-events-auto">
           <Instagram className="w-10 h-10 stroke-[1.5] animate-pulse" />
 
           <div className="flex gap-6 text-sm font-bold font-mono">
@@ -191,98 +256,62 @@ export default function InstagramFeed4U() {
       {/* Mock Instagram Header */}
       <div className="p-6 md:p-10 border-b border-border bg-background/50">
         <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-8 md:gap-12">
-          {/* Avatar com Stories gradient */}
+          {/* Avatar simples */}
           <div className="relative shrink-0">
-            <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 p-[3px] shadow-md flex items-center justify-center">
-              <div className="w-full h-full rounded-full bg-zinc-900 flex items-center justify-center overflow-hidden border-2 border-background relative">
-                <img
-                  src="/4uviagens/logo.jpg"
-                  alt="4uviagens logo"
-                  className="w-full h-full object-cover relative z-10"
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                  }}
-                />
-                <span className="text-3xl font-black tracking-tighter text-primary font-display bg-gradient-to-tr from-yellow-400 via-amber-400 to-amber-500 bg-clip-text text-transparent z-0 absolute">
-                  4U
-                </span>
-              </div>
-            </div>
-            <div className="absolute -bottom-1 -right-1 bg-primary text-primary-foreground p-2 rounded-full border-2 border-background shadow">
-              <Film className="w-4 h-4" />
+            <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border border-border flex items-center justify-center bg-zinc-900 shadow-sm">
+              <img
+                src="/4uviagens/logo.jpg"
+                alt="4uviagens logo"
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                }}
+              />
+              <span className="text-3xl font-black tracking-tighter text-primary font-display bg-gradient-to-tr from-yellow-400 via-amber-400 to-amber-500 bg-clip-text text-transparent z-0 absolute">
+                4U
+              </span>
             </div>
           </div>
 
           {/* Profile Details */}
           <div className="flex-1 text-center md:text-left space-y-4">
             <div className="flex flex-col sm:flex-row items-center gap-4 justify-center md:justify-start">
-              <h4 className="text-xl font-bold tracking-tight flex items-center gap-2">
+              <h4 className="text-xl font-bold tracking-tight">
                 4uviagens
-                <span
-                  className="inline-flex items-center justify-center bg-[#0095f6] text-white rounded-full p-0.5"
-                  title="Conta Verificada"
-                >
-                  <Check className="w-3.5 h-3.5 stroke-[4]" />
-                </span>
               </h4>
-              <div className="flex gap-2">
-                <a
-                  href="https://www.instagram.com/4uviagens/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-6 py-1.5 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5"
-                >
-                  <Instagram className="w-3.5 h-3.5" />
-                  Seguir
-                </a>
-                <a
-                  href="https://wa.me/5511976652340"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-4 py-1.5 bg-secondary hover:bg-secondary/80 border border-border transition-colors text-xs font-bold rounded-lg"
-                >
-                  Enviar mensagem
-                </a>
-              </div>
             </div>
 
             {/* Stats */}
-            <div className="flex justify-center md:justify-start gap-6 text-sm text-muted-foreground font-mono">
+            <div className="flex justify-center md:justify-start gap-6 text-sm text-muted-foreground">
               <span>
-                <strong className="text-foreground font-sans">152</strong> publicações
+                <strong className="text-foreground font-sans">951</strong> posts
               </span>
               <span>
-                <strong className="text-foreground font-sans">8.950</strong> seguidores
+                <strong className="text-foreground font-sans">2.272</strong> seguidores
               </span>
               <span>
-                <strong className="text-foreground font-sans">347</strong> seguindo
+                <strong className="text-foreground font-sans">2.157</strong> seguindo
               </span>
             </div>
 
             {/* Bio */}
-            <div className="text-sm space-y-1 text-left md:text-left max-w-lg">
-              <p className="font-bold text-foreground">4U Viagens e Assessoria ✈️</p>
-              <p className="text-muted-foreground text-xs md:text-sm flex items-start gap-1">
-                <span>🌍</span> <span>Assessoria de Viagens & Roteiros Personalizados</span>
-              </p>
-              <p className="text-muted-foreground text-xs md:text-sm flex items-start gap-1">
-                <span>👑</span> <span>Viagens Premium e Experiências Exclusivas</span>
-              </p>
-              <p className="text-muted-foreground text-xs md:text-sm flex items-start gap-1">
-                <span>🗺️</span> <span>Roteiros sob medida para o público 40+</span>
-              </p>
-              <p className="text-muted-foreground text-xs md:text-sm flex items-start gap-1">
-                <span>📲</span> <span>Clique abaixo para solicitar seu orçamento 👇</span>
-              </p>
-              <div className="pt-1">
+            <div className="text-sm space-y-1 text-left max-w-lg">
+              <p className="font-bold text-foreground">4U Viagens | Assessoria Internacional de Viagens 💜✈️</p>
+              <p className="text-muted-foreground/75 text-xs md:text-sm">Empreendedor(a)</p>
+              <div className="text-muted-foreground space-y-1 text-xs md:text-sm pt-1">
+                <p>‼️ Transformamos roteiros comuns em experiências exclusivas.✈️</p>
+                <p>Curadoria especializada | Grupos exclusivos | Suporte 24h</p>
+                <p>👇 Saiba mais</p>
+              </div>
+              <div className="pt-2">
                 <a
-                  href="https://wa.me/5511976652340"
+                  href="https://goconecta.com.br/4uviagens"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary hover:underline inline-flex items-center gap-1 font-semibold text-xs"
+                  className="text-primary hover:underline inline-flex items-center gap-1 font-semibold text-xs md:text-sm"
                 >
-                  wa.me/4uviagens
-                  <ExternalLink className="w-3 h-3" />
+                  <LinkIcon className="w-3.5 h-3.5 shrink-0" />
+                  goconecta.com.br/4uviagens
                 </a>
               </div>
             </div>
