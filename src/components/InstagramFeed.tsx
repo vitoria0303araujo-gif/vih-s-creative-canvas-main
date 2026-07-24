@@ -1,14 +1,14 @@
 import React, { useRef } from "react";
-import { 
-  Heart, 
-  MessageCircle, 
-  Play, 
-  Instagram, 
-  Grid, 
-  Film, 
-  User, 
-  Check, 
-  ExternalLink 
+import {
+  Heart,
+  MessageCircle,
+  Play,
+  Instagram,
+  Grid,
+  Film,
+  User,
+  Check,
+  ExternalLink,
 } from "lucide-react";
 
 interface ReelItem {
@@ -30,41 +30,44 @@ const REELS_DATA: ReelItem[] = [
     id: 1,
     title: "Invadi o perfil da Laranjinha no Malai Manso Resort",
     strategy: "Co-marketing & Marketing de Influência",
-    description: "Ação estratégica de Co-marketing e Marketing de Influência em parceria com Scarlet Pancera, desenhada para ampliação de awareness e autoridade de marca no segmento de resorts premium.",
+    description:
+      "Ação estratégica de Co-marketing e Marketing de Influência em parceria com Scarlet Pancera, desenhada para ampliação de awareness e autoridade de marca no segmento de resorts premium.",
     tag: "Awareness & Autoridade",
     videoUrl: "/laranjinha.mp4",
     posterUrl: "/laranjinha-cover.jpg",
     instagramUrl: "https://www.instagram.com/reel/DGwGTduRmKQ/",
     likes: "12.4K",
     comments: "342",
-    views: "166K"
+    views: "166K",
   },
   {
     id: 2,
     title: "O Resort Mais Completo de Natal - RN",
     strategy: "Experiência Visual & Conversão",
-    description: "Conteúdo focado em experiência visual e desejo de consumo, estruturado estrategicamente para atração de leads qualificados e direcionamento para funil de vendas.",
+    description:
+      "Conteúdo focado em experiência visual e desejo de consumo, estruturado estrategicamente para atração de leads qualificados e direcionamento para funil de vendas.",
     tag: "Captação de Leads",
     videoUrl: "/natal.mp4",
     posterUrl: "/natal-cover.png",
     instagramUrl: "https://www.instagram.com/reel/DO_1JdYkZXo/",
     likes: "8.9K",
     comments: "195",
-    views: "95K"
+    views: "95K",
   },
   {
     id: 3,
     title: "Conheça o Novo Andar da QViagem",
     strategy: "Employer Branding & Conexão Humana",
-    description: "Estratégia de Employer Branding e conexão humana (humanização da marca), aumentando a taxa de retenção do público e gerando identificação com a comunidade.",
+    description:
+      "Estratégia de Employer Branding e conexão humana (humanização da marca), aumentando a taxa de retenção do público e gerando identificação com a comunidade.",
     tag: "Humanização de Marca",
     videoUrl: "/novo-andar.mp4",
     posterUrl: "/novo-andar-cover.png",
     instagramUrl: "https://www.instagram.com/reel/DI4aBQnMugm/",
     likes: "5.2K",
     comments: "88",
-    views: "54K"
-  }
+    views: "54K",
+  },
 ];
 
 // Componente individual para cada Reel com controle de Mouse Hover
@@ -96,15 +99,14 @@ function ReelCard({ item }: { item: ReelItem }) {
     >
       {/* Video container simulando formato 9:16 de celular */}
       <div className="relative aspect-[9/16] w-full rounded-t-xl overflow-hidden bg-zinc-950 border-b border-border shadow-sm group-hover:shadow-md transition-all duration-500">
-        
         {/* Capa estática + overlay de estatísticas */}
         <div className="absolute inset-0 bg-zinc-900 z-0">
-          <img 
-            src={item.posterUrl} 
-            alt={item.title} 
-            className="w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-700" 
+          <img
+            src={item.posterUrl}
+            alt={item.title}
+            className="w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-700"
             onError={(e) => {
-              e.currentTarget.style.opacity = '0';
+              e.currentTarget.style.opacity = "0";
             }}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-black/80 flex flex-col justify-between p-4 pointer-events-none z-10">
@@ -133,14 +135,14 @@ function ReelCard({ item }: { item: ReelItem }) {
           preload="metadata"
           className="w-full h-full object-cover relative z-10 opacity-90 group-hover:opacity-100 transition-opacity duration-300"
           onError={(e) => {
-            (e.target as HTMLVideoElement).style.display = 'none';
+            (e.target as HTMLVideoElement).style.display = "none";
           }}
         />
 
         {/* Camada ao passar o mouse */}
         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex flex-col items-center justify-center text-white gap-6">
           <Instagram className="w-10 h-10 stroke-[1.5] animate-pulse" />
-          
+
           <div className="flex gap-6 text-sm font-bold font-mono">
             <span className="flex items-center gap-2">
               <Heart className="w-5 h-5 fill-current text-red-500" />
@@ -151,7 +153,7 @@ function ReelCard({ item }: { item: ReelItem }) {
               {item.comments}
             </span>
           </div>
-          
+
           <span className="text-[10px] tracking-widest uppercase bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-full transition-colors flex items-center gap-1.5">
             Assistir no Instagram
             <ExternalLink className="w-3 h-3" />
@@ -193,15 +195,18 @@ export default function InstagramFeed() {
           <div className="relative shrink-0">
             <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 p-[3px] shadow-md flex items-center justify-center">
               <div className="w-full h-full rounded-full bg-card flex items-center justify-center overflow-hidden border-2 border-background relative">
-                <img 
-                  src="/logo.png" 
-                  alt="qviagemoficial logo" 
+                <img
+                  src="/logo.png"
+                  alt="qviagemoficial logo"
                   className="w-full h-full object-cover relative z-10"
                   onError={(e) => {
-                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.style.display = "none";
                   }}
                 />
-                <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full p-4 text-primary fill-current z-0">
+                <svg
+                  viewBox="0 0 100 100"
+                  className="absolute inset-0 w-full h-full p-4 text-primary fill-current z-0"
+                >
                   <path d="M50,15 C30.7,15 15,30.7 15,50 C15,69.3 30.7,85 50,85 C57.8,85 65,82.4 70.8,78.1 L81.5,88.8 L88.6,81.7 L78,71.1 C82.4,65.2 85,57.9 85,50 C85,30.7 69.3,15 50,15 Z M50,73 C37.3,73 27,62.7 27,50 C27,37.3 37.3,27 50,27 C62.7,27 73,37.3 73,50 C73,62.7 62.7,73 50,73 Z" />
                   <path d="M46,38 L62,50 L46,62 Z" className="text-primary/90" />
                 </svg>
@@ -217,23 +222,26 @@ export default function InstagramFeed() {
             <div className="flex flex-col sm:flex-row items-center gap-4 justify-center md:justify-start">
               <h4 className="text-xl font-bold tracking-tight flex items-center gap-2">
                 qviagemoficial
-                <span className="inline-flex items-center justify-center bg-[#0095f6] text-white rounded-full p-0.5" title="Conta Verificada">
+                <span
+                  className="inline-flex items-center justify-center bg-[#0095f6] text-white rounded-full p-0.5"
+                  title="Conta Verificada"
+                >
                   <Check className="w-3.5 h-3.5 stroke-[4]" />
                 </span>
               </h4>
               <div className="flex gap-2">
-                <a 
-                  href="https://www.instagram.com/qviagemoficial/" 
-                  target="_blank" 
+                <a
+                  href="https://www.instagram.com/qviagemoficial/"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="px-6 py-1.5 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5"
                 >
                   <Instagram className="w-3.5 h-3.5" />
                   Seguir
                 </a>
-                <a 
+                <a
                   href="https://wa.me/5511976652340"
-                  target="_blank" 
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="px-4 py-1.5 bg-secondary hover:bg-secondary/80 border border-border transition-colors text-xs font-bold rounded-lg"
                 >
@@ -244,9 +252,15 @@ export default function InstagramFeed() {
 
             {/* Stats */}
             <div className="flex justify-center md:justify-start gap-6 text-sm text-muted-foreground font-mono">
-              <span><strong className="text-foreground font-sans">491</strong> publicações</span>
-              <span><strong className="text-foreground font-sans">17,5 mil</strong> seguidores</span>
-              <span><strong className="text-foreground font-sans">208</strong> seguindo</span>
+              <span>
+                <strong className="text-foreground font-sans">491</strong> publicações
+              </span>
+              <span>
+                <strong className="text-foreground font-sans">17,5 mil</strong> seguidores
+              </span>
+              <span>
+                <strong className="text-foreground font-sans">208</strong> seguindo
+              </span>
             </div>
 
             {/* Bio */}
@@ -265,10 +279,10 @@ export default function InstagramFeed() {
                 <span>📲</span> <span>Tudo que você precisa aqui 👇</span>
               </p>
               <div className="pt-1">
-                <a 
-                  href="https://qviagemoficial.my.canva.site/biolink-qviagem" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                <a
+                  href="https://qviagemoficial.my.canva.site/biolink-qviagem"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-primary hover:underline inline-flex items-center gap-1 font-semibold text-xs"
                 >
                   qviagemoficial.my.canva.site/biolink-qviagem
@@ -280,11 +294,20 @@ export default function InstagramFeed() {
             {/* Followers details */}
             <div className="pt-2 border-t border-border/40 text-[10px] text-muted-foreground flex items-center gap-2 justify-center md:justify-start">
               <div className="flex -space-x-1.5">
-                <div className="w-4 h-4 rounded-full bg-primary/20 border border-background flex items-center justify-center font-bold text-[6px] text-primary">G</div>
-                <div className="w-4 h-4 rounded-full bg-primary/30 border border-background flex items-center justify-center font-bold text-[6px] text-primary">C</div>
-                <div className="w-4 h-4 rounded-full bg-primary/40 border border-background flex items-center justify-center font-bold text-[6px] text-primary">V</div>
+                <div className="w-4 h-4 rounded-full bg-primary/20 border border-background flex items-center justify-center font-bold text-[6px] text-primary">
+                  G
+                </div>
+                <div className="w-4 h-4 rounded-full bg-primary/30 border border-background flex items-center justify-center font-bold text-[6px] text-primary">
+                  C
+                </div>
+                <div className="w-4 h-4 rounded-full bg-primary/40 border border-background flex items-center justify-center font-bold text-[6px] text-primary">
+                  V
+                </div>
               </div>
-              <span>Seguido(a) por <strong className="text-foreground">gabriel_aguiar011</strong>, <strong className="text-foreground">goconecta.com.br</strong> e outras 24 pessoas</span>
+              <span>
+                Seguido(a) por <strong className="text-foreground">gabriel_aguiar011</strong>,{" "}
+                <strong className="text-foreground">goconecta.com.br</strong> e outras 24 pessoas
+              </span>
             </div>
           </div>
         </div>
