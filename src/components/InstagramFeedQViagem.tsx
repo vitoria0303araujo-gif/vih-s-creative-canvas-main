@@ -9,6 +9,8 @@ import {
   User,
   Check,
   ExternalLink,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 
 interface ReelItem {
@@ -76,6 +78,7 @@ function ReelCard({ item }: { item: ReelItem }) {
   const cardRef = useRef<HTMLAnchorElement>(null);
   const [isActive, setIsActive] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
 
   // Detecta se é dispositivo móvel (por largura ou toque)
   useEffect(() => {
@@ -140,6 +143,12 @@ function ReelCard({ item }: { item: ReelItem }) {
     }
   };
 
+  const toggleMute = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsMuted((prev) => !prev);
+  };
+
   return (
     <a
       ref={cardRef}
@@ -169,7 +178,7 @@ function ReelCard({ item }: { item: ReelItem }) {
         <video
           ref={videoRef}
           src={item.videoUrl}
-          muted
+          muted={isMuted}
           loop
           playsInline
           preload="metadata"
@@ -223,6 +232,19 @@ function ReelCard({ item }: { item: ReelItem }) {
             <ExternalLink className="w-3 h-3" />
           </span>
         </div>
+
+        {/* 5. Botão de som flutuante - z-40 para ficar acima da camada de hover e ser clicável */}
+        <button
+          onClick={toggleMute}
+          className="absolute bottom-4 right-4 bg-black/60 hover:bg-black/80 text-white p-2 rounded-full z-40 transition-all duration-300 pointer-events-auto cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary shadow-md"
+          title={isMuted ? "Ativar som" : "Desativar som"}
+        >
+          {isMuted ? (
+            <VolumeX className="w-4.5 h-4.5 stroke-[2]" />
+          ) : (
+            <Volume2 className="w-4.5 h-4.5 stroke-[2]" />
+          )}
+        </button>
       </div>
 
       {/* Detalhes de Estratégia */}

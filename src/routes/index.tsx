@@ -15,7 +15,7 @@ function Index() {
       {/* Sticky minimal nav */}
       <nav className="fixed top-0 left-0 w-full z-50 px-6 py-4 flex justify-between items-center bg-background/80 backdrop-blur-sm">
         <span className="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
-          © 2025 PORTFÓLIO
+          © VITÓRIA | PORTFÓLIO 2026
         </span>
         <div className="hidden md:flex gap-8 text-[11px] font-mono tracking-widest uppercase">
           <a href="#sobre" className="hover:text-primary transition-colors">
@@ -40,7 +40,7 @@ function Index() {
           <div className="md:col-span-8 bg-primary text-primary-foreground p-8 md:p-14 flex flex-col justify-between min-h-[420px] md:min-h-[520px]">
             <div className="space-y-6">
               <p className="uppercase tracking-[0.25em] text-[10px] font-bold opacity-70">
-                Strategy & Content Portfolio
+                Estrategista de Conteúdo & Marketing Digital
               </p>
               <h1 className="font-display text-4xl md:text-7xl lg:text-8xl font-bold leading-[0.85] tracking-tighter">
                 VITÓRIA ARAÚJO
@@ -54,10 +54,10 @@ function Index() {
               </p>
               <div className="mt-6 flex flex-wrap gap-2">
                 <span className="px-3 py-1 border border-primary-foreground/30 rounded-full text-[10px] font-medium uppercase tracking-wider">
-                  Marketing Analyst
+                  Especialista em Estratégia de Conteúdo
                 </span>
                 <span className="px-3 py-1 border border-primary-foreground/30 rounded-full text-[10px] font-medium uppercase tracking-wider">
-                  Content Strategist
+                  Estratégia de Posicionamento
                 </span>
                 <span className="px-3 py-1 border border-primary-foreground/30 rounded-full text-[10px] font-medium uppercase tracking-wider">
                   Social Media
@@ -138,7 +138,7 @@ function Index() {
             <p className="text-[10px] uppercase tracking-[0.3em] font-bold mb-2 opacity-50">
               Status atual
             </p>
-            <p className="text-sm font-medium">Aberta para parcerias em 2025</p>
+            <p className="text-sm font-medium">Disponível para contratação CLT e projetos estratégicos</p>
           </div>
         </div>
       </section>
@@ -158,7 +158,7 @@ function Index() {
                 rel="noopener noreferrer"
                 className="mt-8 inline-flex items-center justify-center gap-3 px-8 py-3.5 bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 rounded-full font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 active:translate-y-0 text-xs tracking-wider uppercase group w-fit cursor-pointer"
               >
-                <span>Visualizar Currículo</span>
+                <span>Visualizar currículo completo</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="14"
@@ -234,24 +234,24 @@ function Index() {
             <h2 className="font-display text-4xl font-bold mb-8">O que eu faço</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
-                "Estratégia de conteúdo",
-                "Gestão de redes sociais",
-                "Calendário de conteúdo",
-                "Análise de perfil",
-                "Curadoria de conteúdo",
-                "Criação de conteúdo",
-                "Posicionamento digital",
-                "Branding",
-                "Storymaker",
-                "Campanhas de lançamento",
-                "Captação de conteúdo",
-                "Copywriting & storytelling",
+                { name: "Estratégia de conteúdo", colorClass: "bg-violet-50 text-violet-700 border-violet-200/60 dark:bg-violet-950/20 dark:text-violet-300 dark:border-violet-900/50" },
+                { name: "Gestão de redes sociais", colorClass: "bg-blue-50 text-blue-700 border-blue-200/60 dark:bg-blue-950/20 dark:text-blue-300 dark:border-blue-900/50" },
+                { name: "Calendário de conteúdo", colorClass: "bg-zinc-50 text-zinc-700 border-zinc-200 dark:bg-zinc-800/30 dark:text-zinc-300 dark:border-zinc-800/50" },
+                { name: "Análise de perfil", colorClass: "bg-violet-50 text-violet-700 border-violet-200/60 dark:bg-violet-950/20 dark:text-violet-300 dark:border-violet-900/50" },
+                { name: "Curadoria de conteúdo", colorClass: "bg-blue-50 text-blue-700 border-blue-200/60 dark:bg-blue-950/20 dark:text-blue-300 dark:border-blue-900/50" },
+                { name: "Criação de conteúdo", colorClass: "bg-zinc-50 text-zinc-700 border-zinc-200 dark:bg-zinc-800/30 dark:text-zinc-300 dark:border-zinc-800/50" },
+                { name: "Posicionamento digital", colorClass: "bg-violet-50 text-violet-700 border-violet-200/60 dark:bg-violet-950/20 dark:text-violet-300 dark:border-violet-900/50" },
+                { name: "Branding", colorClass: "bg-blue-50 text-blue-700 border-blue-200/60 dark:bg-blue-950/20 dark:text-blue-300 dark:border-blue-900/50" },
+                { name: "Storymaker", colorClass: "bg-zinc-50 text-zinc-700 border-zinc-200 dark:bg-zinc-800/30 dark:text-zinc-300 dark:border-zinc-800/50" },
+                { name: "Campanhas de lançamento", colorClass: "bg-violet-50 text-violet-700 border-violet-200/60 dark:bg-violet-950/20 dark:text-violet-300 dark:border-violet-900/50" },
+                { name: "Captação de conteúdo", colorClass: "bg-blue-50 text-blue-700 border-blue-200/60 dark:bg-blue-950/20 dark:text-blue-300 dark:border-blue-900/50" },
+                { name: "Copywriting & storytelling", colorClass: "bg-zinc-50 text-zinc-700 border-zinc-200 dark:bg-zinc-800/30 dark:text-zinc-300 dark:border-zinc-800/50" },
               ].map((skill) => (
                 <span
-                  key={skill}
-                  className="px-4 py-3 border border-border rounded-full text-xs font-medium uppercase tracking-wider text-center hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors"
+                  key={skill.name}
+                  className={`px-4 py-3 border rounded-full text-xs font-semibold uppercase tracking-wider text-center hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 ${skill.colorClass}`}
                 >
-                  {skill}
+                  {skill.name}
                 </span>
               ))}
             </div>
