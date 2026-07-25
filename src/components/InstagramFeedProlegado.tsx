@@ -891,6 +891,32 @@ function PostViewerModal({
   const videoRef = useRef<HTMLVideoElement>(null);
   const carouselContainerRef = useRef<HTMLDivElement>(null);
 
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartX = useRef(0);
+  const dragScrollLeft = useRef(0);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    const container = carouselContainerRef.current;
+    if (!container) return;
+    setIsDragging(true);
+    dragStartX.current = e.pageX - container.offsetLeft;
+    dragScrollLeft.current = container.scrollLeft;
+  };
+
+  const handleMouseLeaveOrUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const container = carouselContainerRef.current;
+    if (!container) return;
+    const x = e.pageX - container.offsetLeft;
+    const walk = (x - dragStartX.current) * 1.5; // Drag speed multiplier
+    container.scrollLeft = dragScrollLeft.current - walk;
+  };
+
   // Fecha o modal ao pressionar ESC
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -962,7 +988,7 @@ function PostViewerModal({
   const renderMedia = () => {
     if (post.type === "video") {
       return (
-        <div className="relative w-full h-full bg-zinc-950 flex items-center justify-center">
+        <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
           <video
             ref={videoRef}
             src={post.videoUrl}
@@ -971,7 +997,7 @@ function PostViewerModal({
             autoPlay
             loop
             playsInline
-            className="w-full h-full object-contain"
+            className="w-full h-full object-cover"
           />
           <button
             onClick={toggleMute}
@@ -989,12 +1015,18 @@ function PostViewerModal({
 
     if (post.type === "carousel" && post.carouselMedia) {
       return (
-        <div className="relative w-full h-full bg-zinc-950 flex items-center justify-center">
+        <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
           {/* Trilho Contínuo (Seamless Mosaic Track) */}
           <div
             ref={carouselContainerRef}
             onScroll={handleScroll}
-            className="flex w-full h-full overflow-x-auto select-none no-scrollbar snap-x snap-mandatory gap-0 space-x-0 p-0 border-0"
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseLeaveOrUp}
+            onMouseLeave={handleMouseLeaveOrUp}
+            onMouseMove={handleMouseMove}
+            className={`flex flex-row w-full h-full overflow-x-auto select-none scrollbar-none snap-x snap-mandatory gap-0 space-x-0 p-0 border-0 ${
+              isDragging ? "cursor-grabbing" : "cursor-grab"
+            }`}
             style={{
               scrollbarWidth: "none",
               msOverflowStyle: "none",
@@ -1003,7 +1035,7 @@ function PostViewerModal({
             {post.carouselMedia.map((media, idx) => (
               <div
                 key={idx}
-                className="w-full h-full shrink-0 snap-start snap-always flex items-center justify-center relative p-0 m-0 border-0"
+                className="flex-none w-full h-full snap-start flex items-center justify-center relative p-0 m-0 border-0 overflow-hidden"
               >
                 {media.type === "video" ? (
                   <video
@@ -1013,13 +1045,13 @@ function PostViewerModal({
                     autoPlay
                     loop
                     playsInline
-                    className="w-full h-full object-contain p-0 m-0"
+                    className="w-full h-full object-cover p-0 m-0"
                   />
                 ) : (
                   <img
                     src={media.url}
                     alt={`Slide ${idx + 1}`}
-                    className="w-full h-full object-contain select-none p-0 m-0"
+                    className="w-full h-full object-cover select-none p-0 m-0"
                   />
                 )}
               </div>
@@ -1094,10 +1126,10 @@ function PostViewerModal({
 
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-card border border-border/80 w-full max-w-5xl rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row h-[85vh] max-h-[85vh] md:h-[650px]"
+        className="bg-card border border-border/80 w-full max-w-5xl md:max-w-[1010px] rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row md:h-[650px]"
       >
         {/* Lado Esquerdo: Media Viewer */}
-        <div className="flex-1 relative bg-zinc-950 flex items-center justify-center h-2/3 md:h-full">
+        <div className="relative w-full aspect-square md:w-[650px] md:h-[650px] shrink-0 overflow-hidden bg-background">
           {renderMedia()}
         </div>
 
