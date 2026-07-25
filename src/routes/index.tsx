@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import InstagramFeedQViagem from "@/components/InstagramFeedQViagem";
 import InstagramFeed4U from "@/components/InstagramFeed4U";
+import InstagramFeedProlegado from "@/components/InstagramFeedProlegado";
 
 const portrait = "/vitoria.png";
 const curriculo = "/curriculo.pdf";
@@ -398,6 +399,75 @@ function Index() {
               </div>
             </div>
             <InstagramFeed4U />
+          </article>
+
+          {/* CASE 03 */}
+          <article className="mt-20 pt-20 border-t border-border">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+              <div className="md:col-span-4">
+                <span className="font-mono text-xs text-primary font-bold">CASE 03</span>
+                <h3 className="text-3xl font-display font-bold mt-2">Prolegado Mídias</h3>
+                <p className="mt-3 text-muted-foreground text-sm">
+                  Estruturação de Perfil, Branding & Posicionamento Pré-Tráfego
+                </p>
+                <p className="mt-6 text-xs text-muted-foreground">
+                  <span className="font-bold text-foreground">Função:</span> Estrategista de Conteúdo e Designer
+                </p>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  <span className="font-bold text-foreground">Contexto:</span> Atuação no ecossistema da agência Prolegado (lançamentos e tráfego pago)
+                </p>
+              </div>
+              <div className="md:col-span-8 space-y-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {[
+                    {
+                      n: "6 Perfis",
+                      v: "Clientes Restruturados",
+                      l: "Alinhamento completo de estética, biografia, destaques e posicionamento.",
+                    },
+                    {
+                      n: "18 Posts",
+                      v: "Fixados & Estratégicos",
+                      l: "Grid de 3 posts por cliente focados em onboarding, autoridade e conversão.",
+                    },
+                    {
+                      n: "190k+",
+                      v: "Seguidores Qualificados",
+                      l: "Audiência combinada preparada para receber tráfego pago de alta relevância.",
+                    },
+                    {
+                      n: "100%",
+                      v: "Identidade Pré-Tráfego",
+                      l: "Criação da base necessária para otimizar anúncios e maximizar a taxa de conversão.",
+                    },
+                    {
+                      n: "High-Ticket",
+                      v: "Branding de Autoridade",
+                      l: "Posicionamento premium lapidado para infoprodutos e negócios locais.",
+                    },
+                    {
+                      n: "Conversão",
+                      v: "Funil Pré-Otimizado",
+                      l: "Restruturação de bios e call-to-actions (CTAs) para diminuir o Custo por Lead (CPL).",
+                    },
+                  ].map((m) => (
+                    <div key={m.v} className="p-5 bg-background border border-border rounded-xl">
+                      <span className="block text-2xl font-black text-primary leading-none">
+                        {m.n}
+                      </span>
+                      <span className="mt-1 block text-sm font-bold">{m.v}</span>
+                      <span className="mt-2 block text-xs text-muted-foreground leading-relaxed">
+                        {m.l}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Antes de iniciar qualquer campanha de tráfego pago ou lançamento, a reestruturação visual e estratégica do perfil é vital. O design e o conteúdo dos 3 posts fixados criam um funil de entrada: um post apresenta o profissional/marca (onboarding), outro educa sobre a solução principal (autoridade) e o terceiro remove as principais objeções de compra (conversão).
+                </p>
+              </div>
+            </div>
+            <InstagramFeedProlegado />
           </article>
         </div>
       </section>
