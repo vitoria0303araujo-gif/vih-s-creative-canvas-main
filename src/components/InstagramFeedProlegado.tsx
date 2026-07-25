@@ -34,6 +34,7 @@ interface PostItem {
     type: "image" | "video";
     url: string;
   }[];
+  caption?: string;
 }
 
 interface ClientProfile {
@@ -130,21 +131,34 @@ const CLIENTS_DATA: ClientProfile[] = [
       {
         id: 1,
         type: "video",
-        title: "A trajetória por trás do Esquadrão Da Casa Própria.",
+        title: "COMO EU ME TORNEI UM CORRETOR DE SUCESSO",
         strategy: "História de Vida & Conexão",
-        views: "9.2K",
-        likes: "1.1K",
-        comments: "72",
+        views: "47,8 mil",
+        likes: "928",
+        comments: "350",
         videoUrl: "/Prolegado/ERICK SHEIK ✅/POST 1 - video/historia-sheik.mp4",
         posterUrl: "/Prolegado/ERICK SHEIK ✅/POST 1 - video/capa-historia-sheik.jpg",
+        caption: `Você sabe como eu me tornei um corretor de sucesso? Eu te conto, do absoluto zero! 👇
+
+Há 12 anos, comecei minha jornada no mercado imobiliário, saindo de uma situação complicada e transformando minha vida completamente. ✅
+
+Do desemprego em 2012 a mais de R$100 milhões em vendas com minha equipe em 2024, o caminho não foi fácil, mas a chave foi virar minha mentalidade e focar no meu potencial! 💡
+
+Eu parei de me sabotar, deixei para trás os vícios e decidi me dedicar 100% à minha carreira.
+
+E hoje estou aqui, para te mostrar como é possível faturar R$30 mil ou mais por mês vendendo apartamentos no Minha Casa Minha Vida. 📈
+
+Se você quer poder ter esse resultado, comenta aqui aqui embaixo “SUCESSO”, que eu vou te mostrar o caminho para chegar até lá! 🚀
+
+#MinhaCasaMinhaVida #CorretorDeSucesso #MentalidadeDeSucesso #HistóriasDeSuperação #Imóveis`
       },
       {
         id: 2,
         type: "carousel",
-        title: "Como funciona a mentoria exclusiva para negócios High-Ticket.",
-        strategy: "Solidez & Negócios",
-        likes: "842",
-        comments: "54",
+        title: "DESCUBRA COMO FATURAR 30K POR MÊS COM IMÓVEIS MINHA CASA MINHA VIDA",
+        strategy: "Captação & Lançamento",
+        likes: "66",
+        comments: "22",
         carouselMedia: [
           { type: "image", url: "/Prolegado/ERICK SHEIK ✅/POST 2 - carrossel/1.jpg" },
           { type: "image", url: "/Prolegado/ERICK SHEIK ✅/POST 2 - carrossel/2.jpg" },
@@ -154,17 +168,49 @@ const CLIENTS_DATA: ClientProfile[] = [
           { type: "image", url: "/Prolegado/ERICK SHEIK ✅/POST 2 - carrossel/6.jpg" },
           { type: "image", url: "/Prolegado/ERICK SHEIK ✅/POST 2 - carrossel/7.jpg" },
         ],
+        caption: `🚨 Corretor, atenção! 🚨
+
+Quer saber como faturar R$ 30K por mês vendendo imóveis Minha Casa Minha Vida sem experiência ou investimento?
+
+Eu sou Erick Sheik, com mais de 10 anos no mercado e líder de equipes que venderam mais de R$ 300 milhões nos últimos 3 anos! 🔥
+
+Nessa aula exclusiva no dia 7 de Outubro, vou te ensinar tudo que você precisa para virar o jogo nas suas vendas.
+
+✅ Está cansado de não ter previsibilidade nas vendas?
+✅ Quer aumentar sua carteira de clientes?
+✅ Quer fechar vendas mais rápidas e lucrativas?
+✅ Quer faturar R$ 30K por mês?
+
+❌ Quem não precisa assistir essa aula?
+
+Se você está 100% satisfeito com suas vendas e prefere ficar no piloto automático… essa aula não é pra você. 
+
+Mas se quer vender mais, com mais consistência e previsibilidade, eu te espero!
+
+Comente CORRETOR30K e garanta sua vaga agora! 👇
+
+📅 Data: 7 de Outubro, segunda-feira!
+⏰ Às 20H, no YouTube! 
+
+#CorretorDeSucesso #MinhaCasaMinhaVida #Fature30K #AulaExclusiva #VendasImobiliárias`
       },
       {
         id: 3,
         type: "video",
-        title: "Do zero a 50k em comissões no mercado imobiliário.",
-        strategy: "Validação & Autoridade",
-        views: "14.5K",
-        likes: "1.8K",
-        comments: "115",
+        title: "COMO ELA CHEGOU A FATURAR + de 50K NO MÊS",
+        strategy: "Estudo de Caso & Prova Social",
+        views: "5.285",
+        likes: "109",
+        comments: "6",
         videoUrl: "/Prolegado/ERICK SHEIK ✅/POST 3 - video/50k.mp4",
         posterUrl: "/Prolegado/ERICK SHEIK ✅/POST 3 - video/capa-50k.jpg",
+        caption: `Conheçam essa transformação real no mercado imobiliário!
+
+Conheça a @amayaimob, uma corretora que deu uma virada na sua carreira. Antes, ela trabalhava como manicure, faturando no máximo R$2 mil por mês. Agora, com dedicação e foco, ela alcançou impressionantes R$80 mil in um único mês! 💰
+
+👉 Você acredita que o mercado imobiliário pode mudar vidas? A @amayaimob tem a resposta: ‘Muda vidas completamente!’
+
+E você? Também acredita que o mercado imobiliário pode mudar vidas? Responde aqui embaixo 👇`
       },
     ],
   },
@@ -830,8 +876,8 @@ function PostViewerModal({
 
             <div className="space-y-1 text-xs text-muted-foreground/90 font-sans">
               <p className="font-bold text-foreground">Legenda do Feed Restaurado:</p>
-              <p className="italic leading-relaxed">
-                "{client.bio}"
+              <p className="italic leading-relaxed whitespace-pre-line">
+                {post.caption || client.bio}
               </p>
             </div>
           </div>
