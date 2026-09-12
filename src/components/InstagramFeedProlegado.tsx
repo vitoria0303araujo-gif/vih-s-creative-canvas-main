@@ -711,10 +711,13 @@ const CLIENTS_DATA: ClientProfile[] = [
 ];
 
 export default function InstagramFeedProlegado() {
-  const [activeClient, setActiveClient] = useState<ClientProfile>(CLIENTS_DATA[0]);
+  const { clients, activeClientId, setActiveClientId, getClient } = usePortfolioCMS();
+  const prolegadoClients = (clients && clients.length > 0)
+    ? clients.filter((c) => c.id !== "4uviagens" && c.id !== "qviagem")
+    : CLIENTS_DATA;
+  const activeClient = prolegadoClients.find((c) => c.id === activeClientId) || prolegadoClients[0];
   const [selectedPost, setSelectedPost] = useState<PostItem | null>(null);
   const [modalTab, setModalTab] = useState<"caption" | "strategy">("caption");
-  const { clients, activeClientId, setActiveClientId, getClient } = usePortfolioCMS();
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
 
@@ -789,7 +792,7 @@ export default function InstagramFeedProlegado() {
             return (
               <button
                 key={client.id}
-                onClick={() => setActiveClient(client)}
+                onClick={() => setActiveClientId(client.id)}
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
                   isActive
                     ? "bg-primary text-primary-foreground shadow-md scale-105"
