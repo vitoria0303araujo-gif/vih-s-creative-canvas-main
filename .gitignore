@@ -33,3 +33,6 @@ dist-ssr
 
 # Large video files (>100MB)
 *.mov
+
+# Nested temp folder
+PORTIF-LIO/

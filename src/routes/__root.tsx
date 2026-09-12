@@ -1,3 +1,5 @@
+import { PortfolioCMSProvider } from "@/contexts/PortfolioCMSContext";
+import { AdminCMSModal } from "@/components/AdminCMSModal";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,

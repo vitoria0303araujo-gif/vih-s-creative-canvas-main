@@ -1,4 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
+import { usePortfolioCMS } from "@/contexts/PortfolioCMSContext";
+import { useCoverPosition } from "@/hooks/useCoverPosition";
+import { MoveVertical, CheckCheck } from "lucide-react";
 import {
   Heart,
   MessageCircle,
@@ -35,8 +38,8 @@ const REELS_DATA: ReelItem[] = [
     description:
       "Ação estratégica de Co-marketing e Marketing de Influência em parceria com Scarlet Pancera, desenhada para ampliação de awareness e autoridade de marca no segmento de resorts premium.",
     tag: "Awareness & Autoridade",
-    videoUrl: "/laranjinha.mp4",
-    posterUrl: "/laranjinha-cover.jpg",
+    videoUrl: "/CLIENTES/QViagem/POST 3/laranjinha.mp4",
+    posterUrl: "/CLIENTES/QViagem/POST 3/laranjinha-cover.jpg",
     instagramUrl: "https://www.instagram.com/reel/DGwGTduRmKQ/",
     likes: "12.4K",
     comments: "342",
@@ -49,8 +52,8 @@ const REELS_DATA: ReelItem[] = [
     description:
       "Conteúdo focado em experiência visual e desejo de consumo, estruturado estrategicamente para atração de leads qualificados e direcionamento para funil de vendas.",
     tag: "Captação de Leads",
-    videoUrl: "/natal.mp4",
-    posterUrl: "/natal-cover.png",
+    videoUrl: "/CLIENTES/QViagem/POST 2/natal.mp4",
+    posterUrl: "/CLIENTES/QViagem/POST 2/natal-cover.png",
     instagramUrl: "https://www.instagram.com/reel/DO_1JdYkZXo/",
     likes: "8.9K",
     comments: "195",
@@ -63,8 +66,8 @@ const REELS_DATA: ReelItem[] = [
     description:
       "Estratégia de Employer Branding e conexão humana (humanização da marca), aumentando a taxa de retenção do público e gerando identificação com a comunidade.",
     tag: "Humanização de Marca",
-    videoUrl: "/novo-andar.mp4",
-    posterUrl: "/novo-andar-cover.png",
+    videoUrl: "/CLIENTES/QViagem/POST 1/novo-andar.mp4",
+    posterUrl: "/CLIENTES/QViagem/POST 1/novo-andar-cover.png",
     instagramUrl: "https://www.instagram.com/reel/DI4aBQnMugm/",
     likes: "5.2K",
     comments: "88",
@@ -73,7 +76,11 @@ const REELS_DATA: ReelItem[] = [
 ];
 
 // Componente individual para cada Reel com controle de Mouse Hover e Intersection Observer
-function ReelCard({ item }: { item: ReelItem }) {
+function ReelCard({ item, coverPositionHook }: { item: ReelItem; coverPositionHook: ReturnType<typeof useCoverPosition> }) {
+  const { positions, editingPostId, setEditingPostId, updatePosition, handlePostClick, getObjectPosition } = coverPositionHook;
+  const pIdKey = `qviagem-${item.id}`;
+  const isEditingThisCover = editingPostId === pIdKey;
+  const currentY = positions[pIdKey] ?? 50;
   const videoRef = useRef<HTMLVideoElement>(null);
   const cardRef = useRef<HTMLAnchorElement>(null);
   const [isActive, setIsActive] = useState(false);
@@ -152,7 +159,11 @@ function ReelCard({ item }: { item: ReelItem }) {
   return (
     <a
       ref={cardRef}
-      href={item.instagramUrl}
+      onClick={(e) => {
+        if (!isEditingThisCover) {
+          handlePostClick(pIdKey, () => window.open(item.instagramUrl, "_blank"));
+        }
+      }}
       target="_blank"
       rel="noopener noreferrer"
       onMouseEnter={handleMouseEnter}
@@ -167,7 +178,7 @@ function ReelCard({ item }: { item: ReelItem }) {
           <img
             src={item.posterUrl}
             alt={item.title}
-            className="w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-700"
+            className="w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-700" style={{ objectPosition: getObjectPosition(pIdKey) }}
             onError={(e) => {
               e.currentTarget.style.opacity = "0";
             }}
@@ -182,7 +193,7 @@ function ReelCard({ item }: { item: ReelItem }) {
           loop
           playsInline
           preload="metadata"
-          className={`w-full h-full object-cover absolute inset-0 transition-opacity duration-300 ${
+          style={{ objectPosition: getObjectPosition(pIdKey) }} className={`w-full h-full object-cover absolute inset-0 transition-opacity duration-300 ${
             isActive ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
           }`}
           onError={(e) => {
@@ -199,9 +210,9 @@ function ReelCard({ item }: { item: ReelItem }) {
                 color: "#ffffff", 
                 textShadow: "0 1px 2px rgba(0, 0, 0, 0.6)" 
               }}
-              className="backdrop-blur-md text-[11px] px-2.5 py-1 rounded-full font-sans font-semibold flex items-center gap-1 shadow-sm"
+              className="backdrop-blur-md text-[11px] px-2.5 py-1 rounded-full font-sans font-semibold flex items-center gap-1 shadow-sm overflow-hidden border-0"
             >
-              <Play className="w-2.5 h-2.5 fill-current text-white" />
+              <Play className="w-2.5 h-2.5 fill-white text-white shrink-0 stroke-0 translate-x-[0.5px]" />
               {item.views}
             </span>
           </div>
@@ -232,6 +243,87 @@ function ReelCard({ item }: { item: ReelItem }) {
             <ExternalLink className="w-3 h-3" />
           </span>
         </div>
+
+                {/* CONTROLE DE AJUSTE DA CAPA (4 CLIQUES) */}
+        {isEditingThisCover && (
+          <div
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              const startY = e.clientY;
+              const startVal = currentY;
+              const targetEl = e.currentTarget;
+              const rect = targetEl.getBoundingClientRect();
+              const height = rect.height || 100;
+
+              const handleMouseMove = (moveEvent: MouseEvent) => {
+                const diffY = moveEvent.clientY - startY;
+                const deltaPercent = (diffY / height) * 100;
+                const nextY = Math.max(0, Math.min(100, startVal - deltaPercent));
+                updatePosition(pIdKey, nextY);
+              };
+
+              const handleMouseUp = () => {
+                window.removeEventListener("mousemove", handleMouseMove);
+                window.removeEventListener("mouseup", handleMouseUp);
+              };
+
+              window.addEventListener("mousemove", handleMouseMove);
+              window.addEventListener("mouseup", handleMouseUp);
+            }}
+            onTouchStart={(e) => {
+              e.stopPropagation();
+              const startY = e.touches[0].clientY;
+              const startVal = currentY;
+              const targetEl = e.currentTarget;
+              const rect = targetEl.getBoundingClientRect();
+              const height = rect.height || 100;
+
+              const handleTouchMove = (moveEvent: TouchEvent) => {
+                const diffY = moveEvent.touches[0].clientY - startY;
+                const deltaPercent = (diffY / height) * 100;
+                const nextY = Math.max(0, Math.min(100, startVal - deltaPercent));
+                updatePosition(pIdKey, nextY);
+              };
+
+              const handleTouchEnd = () => {
+                window.removeEventListener("touchmove", handleTouchMove);
+                window.removeEventListener("touchend", handleTouchEnd);
+              };
+
+              window.addEventListener("touchmove", handleTouchMove);
+              window.addEventListener("touchend", handleTouchEnd);
+            }}
+            className="absolute inset-0 z-50 p-2 flex flex-col justify-between items-center cursor-ns-resize border-2 border-amber-400/80 rounded-xl animate-in fade-in"
+          >
+            <div className="px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-sm text-amber-300 text-[10px] font-bold flex items-center gap-1 shadow-md pointer-events-none">
+              <MoveVertical className="w-3 h-3 text-amber-400" />
+              <span>Arraste a imagem para enquadrar ({currentY}%)</span>
+            </div>
+
+            <div className="w-full space-y-1.5 bg-black/75 backdrop-blur-md p-2 rounded-xl border border-white/10 shadow-lg pointer-events-auto">
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={currentY}
+                onChange={(e) => updatePosition(pIdKey, Number(e.target.value))}
+                className="w-full accent-emerald-400 cursor-pointer h-1.5 bg-white/20 rounded-lg"
+              />
+
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditingPostId(null);
+                }}
+                className="w-full py-1 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[11px] flex items-center justify-center gap-1 transition-colors shadow"
+              >
+                <CheckCheck className="w-3.5 h-3.5" />
+                Concluir Enquadramento
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* 5. Botão de som flutuante - z-40 para ficar acima da camada de hover e ser clicável */}
         <button
@@ -272,6 +364,10 @@ function ReelCard({ item }: { item: ReelItem }) {
 }
 
 export default function InstagramFeedQViagem() {
+  const { getClient } = usePortfolioCMS();
+  const clientQ = getClient("qviagem");
+  const posts = clientQ?.posts || REELS_DATA;
+  const coverPositionHook = useCoverPosition();
   return (
     <div className="mt-16 border border-border rounded-2xl bg-card overflow-hidden shadow-sm animate-reveal">
       {/* Mock Instagram Header */}
@@ -282,7 +378,7 @@ export default function InstagramFeedQViagem() {
             <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 p-[3px] shadow-md flex items-center justify-center">
               <div className="w-full h-full rounded-full bg-card flex items-center justify-center overflow-hidden border-2 border-background relative">
                 <img
-                  src="/logo.png"
+                  src="/CLIENTES/QViagem/logotipo-qviagem.png"
                   alt="qviagemoficial logo"
                   className="w-full h-full object-cover relative z-10"
                   onError={(e) => {
@@ -401,8 +497,8 @@ export default function InstagramFeedQViagem() {
       {/* Reels Grid */}
       <div className="p-6 md:p-10 bg-background/30">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {REELS_DATA.map((item) => (
-            <ReelCard key={item.id} item={item} />
+          {posts.map((item: any) => (
+            <ReelCard key={item.id} item={item} coverPositionHook={coverPositionHook} />
           ))}
         </div>
       </div>

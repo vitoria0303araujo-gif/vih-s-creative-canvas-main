@@ -1,4 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
+import { usePortfolioCMS } from "@/contexts/PortfolioCMSContext";
+import { useCoverPosition } from "@/hooks/useCoverPosition";
+import { MoveVertical, CheckCheck } from "lucide-react";
 import {
   Heart,
   MessageCircle,
@@ -36,8 +39,8 @@ const REELS_DATA: ReelItem[] = [
     description:
       "A trajetória e os bastidores reais que transformaram a 4U Viagens em referência de assessoria para o público de turismo premium.",
     tag: "Branding & Autoridade",
-    videoUrl: "/4uviagens/videos/trajetoria.mp4",
-    posterUrl: "/4uviagens/capas/capa-trajetoria.jpg",
+    videoUrl: "/CLIENTES/4U Viagens/videos/trajetoria.mp4",
+    posterUrl: "/CLIENTES/4U Viagens/capas/capa-trajetoria.jpg",
     instagramUrl: "https://www.instagram.com/4uviagens/",
     likes: "88",
     comments: "46",
@@ -50,8 +53,8 @@ const REELS_DATA: ReelItem[] = [
     description:
       "Campanha comercial estratégica para grupos de viagem exclusivos, combinando desejo, escassez e condições imperdíveis.",
     tag: "Campanha Comercial",
-    videoUrl: "/4uviagens/videos/black-friday.mp4",
-    posterUrl: "/4uviagens/capas/capa-black-friday.jpg",
+    videoUrl: "/CLIENTES/4U Viagens/videos/black-friday.mp4",
+    posterUrl: "/CLIENTES/4U Viagens/capas/capa-black-friday.jpg",
     instagramUrl: "https://www.instagram.com/4uviagens/",
     likes: "60",
     comments: "25",
@@ -64,8 +67,8 @@ const REELS_DATA: ReelItem[] = [
     description:
       "Vídeo de quebra de objeções demonstrando o valor de uma assessoria de viagens personalizada contra as buscas genéricas na internet.",
     tag: "Educação de Audiência",
-    videoUrl: "/4uviagens/videos/google.mp4",
-    posterUrl: "/4uviagens/capas/capa-google.jpg",
+    videoUrl: "/CLIENTES/4U Viagens/videos/google.mp4",
+    posterUrl: "/CLIENTES/4U Viagens/capas/capa-google.jpg",
     instagramUrl: "https://www.instagram.com/4uviagens/",
     likes: "32",
     comments: "3",
@@ -74,7 +77,11 @@ const REELS_DATA: ReelItem[] = [
 ];
 
 // Componente individual para cada Reel com controle de Mouse Hover e Intersection Observer
-function ReelCard({ item }: { item: ReelItem }) {
+function ReelCard({ item, coverPositionHook }: { item: ReelItem; coverPositionHook: ReturnType<typeof useCoverPosition> }) {
+  const { positions, editingPostId, setEditingPostId, updatePosition, handlePostClick, getObjectPosition } = coverPositionHook;
+  const pIdKey = `4uviagens-${item.id}`;
+  const isEditingThisCover = editingPostId === pIdKey;
+  const currentY = positions[pIdKey] ?? 50;
   const videoRef = useRef<HTMLVideoElement>(null);
   const cardRef = useRef<HTMLAnchorElement>(null);
   const [isActive, setIsActive] = useState(false);
@@ -153,7 +160,11 @@ function ReelCard({ item }: { item: ReelItem }) {
   return (
     <a
       ref={cardRef}
-      href={item.instagramUrl}
+      onClick={(e) => {
+        if (!isEditingThisCover) {
+          handlePostClick(pIdKey, () => window.open(item.instagramUrl, "_blank"));
+        }
+      }}
       target="_blank"
       rel="noopener noreferrer"
       onMouseEnter={handleMouseEnter}
@@ -168,7 +179,7 @@ function ReelCard({ item }: { item: ReelItem }) {
           <img
             src={item.posterUrl}
             alt={item.title}
-            className="w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-700"
+            className="w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-700" style={{ objectPosition: getObjectPosition(pIdKey) }}
             onError={(e) => {
               e.currentTarget.style.opacity = "0";
             }}
@@ -183,7 +194,7 @@ function ReelCard({ item }: { item: ReelItem }) {
           loop
           playsInline
           preload="metadata"
-          className={`w-full h-full object-cover absolute inset-0 transition-opacity duration-300 ${
+          style={{ objectPosition: getObjectPosition(pIdKey) }} className={`w-full h-full object-cover absolute inset-0 transition-opacity duration-300 ${
             isActive ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
           }`}
           onError={(e) => {
@@ -200,9 +211,9 @@ function ReelCard({ item }: { item: ReelItem }) {
                 color: "#ffffff", 
                 textShadow: "0 1px 2px rgba(0, 0, 0, 0.6)" 
               }}
-              className="backdrop-blur-md text-[11px] px-2.5 py-1 rounded-full font-sans font-semibold flex items-center gap-1 shadow-sm"
+              className="backdrop-blur-md text-[11px] px-2.5 py-1 rounded-full font-sans font-semibold flex items-center gap-1 shadow-sm overflow-hidden border-0"
             >
-              <Play className="w-2.5 h-2.5 fill-current text-white" />
+              <Play className="w-2.5 h-2.5 fill-white text-white shrink-0 stroke-0 translate-x-[0.5px]" />
               {item.views}
             </span>
           </div>
@@ -233,6 +244,87 @@ function ReelCard({ item }: { item: ReelItem }) {
             <ExternalLink className="w-3 h-3" />
           </span>
         </div>
+
+                {/* CONTROLE DE AJUSTE DA CAPA (4 CLIQUES) */}
+        {isEditingThisCover && (
+          <div
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              const startY = e.clientY;
+              const startVal = currentY;
+              const targetEl = e.currentTarget;
+              const rect = targetEl.getBoundingClientRect();
+              const height = rect.height || 100;
+
+              const handleMouseMove = (moveEvent: MouseEvent) => {
+                const diffY = moveEvent.clientY - startY;
+                const deltaPercent = (diffY / height) * 100;
+                const nextY = Math.max(0, Math.min(100, startVal - deltaPercent));
+                updatePosition(pIdKey, nextY);
+              };
+
+              const handleMouseUp = () => {
+                window.removeEventListener("mousemove", handleMouseMove);
+                window.removeEventListener("mouseup", handleMouseUp);
+              };
+
+              window.addEventListener("mousemove", handleMouseMove);
+              window.addEventListener("mouseup", handleMouseUp);
+            }}
+            onTouchStart={(e) => {
+              e.stopPropagation();
+              const startY = e.touches[0].clientY;
+              const startVal = currentY;
+              const targetEl = e.currentTarget;
+              const rect = targetEl.getBoundingClientRect();
+              const height = rect.height || 100;
+
+              const handleTouchMove = (moveEvent: TouchEvent) => {
+                const diffY = moveEvent.touches[0].clientY - startY;
+                const deltaPercent = (diffY / height) * 100;
+                const nextY = Math.max(0, Math.min(100, startVal - deltaPercent));
+                updatePosition(pIdKey, nextY);
+              };
+
+              const handleTouchEnd = () => {
+                window.removeEventListener("touchmove", handleTouchMove);
+                window.removeEventListener("touchend", handleTouchEnd);
+              };
+
+              window.addEventListener("touchmove", handleTouchMove);
+              window.addEventListener("touchend", handleTouchEnd);
+            }}
+            className="absolute inset-0 z-50 p-2 flex flex-col justify-between items-center cursor-ns-resize border-2 border-amber-400/80 rounded-xl animate-in fade-in"
+          >
+            <div className="px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-sm text-amber-300 text-[10px] font-bold flex items-center gap-1 shadow-md pointer-events-none">
+              <MoveVertical className="w-3 h-3 text-amber-400" />
+              <span>Arraste a imagem para enquadrar ({currentY}%)</span>
+            </div>
+
+            <div className="w-full space-y-1.5 bg-black/75 backdrop-blur-md p-2 rounded-xl border border-white/10 shadow-lg pointer-events-auto">
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={currentY}
+                onChange={(e) => updatePosition(pIdKey, Number(e.target.value))}
+                className="w-full accent-emerald-400 cursor-pointer h-1.5 bg-white/20 rounded-lg"
+              />
+
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditingPostId(null);
+                }}
+                className="w-full py-1 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[11px] flex items-center justify-center gap-1 transition-colors shadow"
+              >
+                <CheckCheck className="w-3.5 h-3.5" />
+                Concluir Enquadramento
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* 5. Botão de som flutuante - z-40 para ficar acima da camada de hover e ser clicável */}
         <button
@@ -273,6 +365,10 @@ function ReelCard({ item }: { item: ReelItem }) {
 }
 
 export default function InstagramFeed4U() {
+  const { getClient } = usePortfolioCMS();
+  const client4U = getClient("4uviagens");
+  const posts = client4U?.posts || REELS_DATA;
+  const coverPositionHook = useCoverPosition();
   return (
     <div className="mt-16 border border-border rounded-2xl bg-card overflow-hidden shadow-sm animate-reveal">
       {/* Mock Instagram Header */}
@@ -282,7 +378,7 @@ export default function InstagramFeed4U() {
           <div className="relative shrink-0">
             <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border border-border flex items-center justify-center bg-zinc-900 shadow-sm">
               <img
-                src="/4uviagens/logo.jpg"
+                src="/CLIENTES/4U Viagens/logo-4uviagens.jpg"
                 alt="4uviagens logo"
                 className="w-full h-full object-cover"
                 onError={(e) => {
@@ -306,13 +402,13 @@ export default function InstagramFeed4U() {
             {/* Stats */}
             <div className="flex justify-center md:justify-start gap-6 text-sm text-muted-foreground">
               <span>
-                <strong className="text-foreground font-sans">951</strong> posts
+                <strong className="text-foreground font-sans">{client4U?.postsCount || "951"}</strong> posts
               </span>
               <span>
-                <strong className="text-foreground font-sans">2.272</strong> seguidores
+                <strong className="text-foreground font-sans">{client4U?.followersCount || "2.272"}</strong> seguidores
               </span>
               <span>
-                <strong className="text-foreground font-sans">2.157</strong> seguindo
+                <strong className="text-foreground font-sans">{client4U?.followingCount || "2.157"}</strong> seguindo
               </span>
             </div>
 
@@ -362,8 +458,8 @@ export default function InstagramFeed4U() {
       {/* Reels Grid */}
       <div className="p-6 md:p-10 bg-background/30">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {REELS_DATA.map((item) => (
-            <ReelCard key={item.id} item={item} />
+          {posts.map((item: any) => (
+            <ReelCard key={item.id} item={item} coverPositionHook={coverPositionHook} />
           ))}
         </div>
       </div>
